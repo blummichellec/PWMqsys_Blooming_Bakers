@@ -36,30 +36,63 @@ module avalon_wrapper (
 	*/
 	
 	assign load_pulse_width = avs_s0_chip_select & avs_s0_write & (avs_s0_address == 0);
-	assign load_period = avs_s0_chip_select & avs_s0_write & (avs_s0_address == 0); 
-	assign load_enable = avs_s0_chip_select & avs_s0_write & (avs_s0_address == 0);
-	
-	assign read_pulse_width = avs_s0_chip_select & avs_s0_read & (avs_s0_address == 0); 
-   assign read_period = avs_s0_chip_select & avs_s0_read & (avs_s0_address == 0); 
-	assign read_enable = avs_s0_chip_select & avs_s0_read & (avs_s0_address == 0); 
-	assign period = avs_s0_chip_select & enable & (avs_s0_address == 0);
-	
-	
-	always
-	begin
-	
-		if (load_pulse_width == 1)
-		begin
-		if (avs_s0_byteenable[0] == 1)
-			pulse_width[7:0] <= avs_s0_writedata[7:0];
-		if (avs_s0_byteenable[1] == 1)
-			pulse_width[15:18] <= avs_s0_writedata[15:18];
-		if (avs_s0_byteenable[2] == 1)
-			pulse_width[23:16] <= avs_s0_writedata[23:16];	
-		if (avs_s0_byteenable[3] == 1)
-			pulse_width[31:24] <= avs_s0_writedata[31:24];
+	assign load_period = avs_s0_chip_select & avs_S0_write & (avs_s0_address == 1);
+	assign load_enable = avs_s0_chip_select & avs_S0_write & (avs_s0_address == 2);
+
+	assign read_pulse_width = avs_s0_chip_select & avs_s0_read & (avs_s0_address == 0);
+	assign read_period = avs_s0_chip_select & avs_s0_read & (avs_s0_address == 1);
+	assign read_enable = avs_s0_chip_select & avs_s0_read & (avs_s0_address == 2);
+
+	always @ (posedge clk or negedge rsi_rst_n) begin
+		if (rsi_rst_n == 0) begin
+			pulse_width <= 250000; 
+			period <= 500000; 
+			enable <= 1;
 		end
-	
+		else
+		if (load_pulse_width == 1) begin
+			if  (avs_s0_byteenable[0] == 1) begin
+				pulse_width[7:0] <=avs_s0_writedata[7:0];
+			end 
+			if  (avs_s0_byteenable[1] == 1) begin
+				pulse_width[15:8] <=avs_s0_writedata[15:8];
+			end 
+			if  (avs_s0_byteenable[2] == 1) begin
+				pulse_width[23:16] <=avs_s0_writedata[23:16];
+			end 
+			if  (avs_s0_byteenable[3] == 1) begin
+				pulse_width[31:24] <=avs_s0_writedata[31:24];
+			end 
+		end
+		if (read_pulse_width ==1) begin
+			read_data <= pulse_width;
+		end
+
+		if (load_period == 1) begin
+			if  (avs_s0_byteenable[0] == 1) begin
+				period[7:0] <=avs_s0_writedata[7:0];
+			end 
+			if  (avs_s0_byteenable[1] == 1) begin
+				period[15:8] <=avs_s0_writedata[15:8];
+			end 
+			if  (avs_s0_byteenable[2] == 1) begin
+				period[23:16] <=avs_s0_writedata[23:16];
+			end 
+			if  (avs_s0_byteenable[3] == 1) begin
+				period[31:24] <=avs_s0_writedata[31:24];
+			end 
+		end
+		if (read_period ==1) begin
+			read_data <= period;
+		end
+		if (load_enable== 1) begin
+			if  (avs_s0_byteenable[0] == 1) begin
+				enable[7:0] <=avs_s0_writedata[7:0];
+			end 
+		end
+		if (enable ==1) begin
+			read_data <= enable;
+		end
 	end
-	
-	endmodule
+
+endmodule
