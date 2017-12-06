@@ -1,4 +1,4 @@
-module PWM_core #(parameter n = 8, parameter m = 4)( 
+module PWM_core #(parameter n = 32, parameter m = 4)( 
 input reset, clk,
 input [n-1:0] switch_in,
 input [n:0] pulse_period,
