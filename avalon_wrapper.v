@@ -24,13 +24,15 @@ module avalon_wrapper (
 	assign avs_s0_readdata = read_data;
 	
 	PWM_core PWM_core0(
-		.clk(csi_clk), 
 		.reset(rsi_rst_n),
-		.pulse_period(period),
+		.clk(csi_clk), 
 		.switch_in(pulse_width),
-		.out(pwm_out)
+		.pulse_period(period),
+		.byteenable(4'b1111),
+		.out(pwm_out)//,
+		//.out_pin(pwm_out)
 	);
-	
+
 	/*
 	Register Selection
 	*/
